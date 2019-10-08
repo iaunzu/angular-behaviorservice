@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { skip, distinctUntilChanged } from 'rxjs/operators';
+import { Component, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
+import { skip, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { AlertStoreService } from './shared/alert-store.service'
 
@@ -18,14 +19,17 @@ import { AlertStoreService } from './shared/alert-store.service'
     </div>
   `
 })
-export class AlertPanelComponent {
+export class AlertPanelComponent implements OnDestroy {
   
   changed = false;
+  
+  private destroy = new Subject<void>();
   
   constructor(private alertStoreService: AlertStoreService) {
     alertStoreService.state$.pipe(
       skip(1),
-      distinctUntilChanged() // multiple resets
+      distinctUntilChanged(), // multiple resets
+      takeUntil(this.destroy)
     ).subscribe( _ => {
       this.changed = true;
     })
@@ -33,5 +37,10 @@ export class AlertPanelComponent {
 
   dismiss(): void {
     this.changed = false;
+  }
+
+  ngOnDestroy(): void {
+    this.destroy.next();
+    this.destroy.unsubscribe();
   }
 } 
