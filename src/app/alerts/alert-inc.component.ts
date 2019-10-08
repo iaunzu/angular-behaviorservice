@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { FormControl } from '@angular/forms';
 
 import { AlertStoreService } from './shared/alert-store.service'
 
