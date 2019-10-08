@@ -1,34 +1,36 @@
-import { Component, OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
-import { skip, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { Component, OnDestroy } from "@angular/core";
+import { Subject } from "rxjs";
+import { skip, distinctUntilChanged, takeUntil } from "rxjs/operators";
 
-import { AlertStoreService } from './shared/alert-store.service'
+import { AlertStoreService } from "./shared/alert-store.service";
 
 @Component({
-  selector: 'app-alert-panel',
+  selector: "app-alert-panel",
   template: `
     <div>
-      <h3>Nivel de alerta: {{alertStoreService.state$ | async}}</h3>
+      <h3>Nivel de alerta: {{ alertStoreService.state$ | async }}</h3>
     </div>
     <div *ngIf="changed" class="alert alert-warning">
-      * El nivel de alerta ha cambiado. <button (click)="dismiss()" class="btn btn-success">Aceptar</button>
+      * El nivel de alerta ha cambiado.
+      <button (click)="dismiss()" class="btn btn-success">Aceptar</button>
     </div>
   `
 })
 export class AlertPanelComponent implements OnDestroy {
-  
   changed = false;
-  
+
   private destroy = new Subject<void>();
-  
+
   constructor(private alertStoreService: AlertStoreService) {
-    alertStoreService.state$.pipe(
-      distinctUntilChanged(), // multiple resets
-      skip(1),
-      takeUntil(this.destroy)
-    ).subscribe( _ => {
-      this.changed = true;
-    })
+    alertStoreService.state$
+      .pipe(
+        distinctUntilChanged(), // multiple resets
+        skip(1),
+        takeUntil(this.destroy)
+      )
+      .subscribe(_ => {
+        this.changed = true;
+      });
   }
 
   dismiss(): void {
@@ -39,4 +41,4 @@ export class AlertPanelComponent implements OnDestroy {
     this.destroy.next();
     this.destroy.unsubscribe();
   }
-} 
+}
