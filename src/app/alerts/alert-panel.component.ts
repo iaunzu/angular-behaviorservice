@@ -8,14 +8,10 @@ import { AlertStoreService } from './shared/alert-store.service'
   selector: 'app-alert-panel',
   template: `
     <div>
-      <app-alert-inc></app-alert-inc>
-      <app-alert-resetter></app-alert-resetter>
+      <h3>Nivel de alerta: {{alertStoreService.state$ | async}}</h3>
     </div>
-    <div>
-      Nivel de alerta: {{alertStoreService.state$ | async}}
-    </div>
-    <div *ngIf="changed">
-      * El nivel de alerta ha cambiado <button (click)="dismiss()">Aceptar</button>
+    <div *ngIf="changed" class="alert alert-warning">
+      * El nivel de alerta ha cambiado. <button (click)="dismiss()" class="btn btn-success">Aceptar</button>
     </div>
   `
 })
@@ -27,8 +23,8 @@ export class AlertPanelComponent implements OnDestroy {
   
   constructor(private alertStoreService: AlertStoreService) {
     alertStoreService.state$.pipe(
-      skip(1),
       distinctUntilChanged(), // multiple resets
+      skip(1),
       takeUntil(this.destroy)
     ).subscribe( _ => {
       this.changed = true;

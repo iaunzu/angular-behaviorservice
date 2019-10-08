@@ -6,15 +6,11 @@ import { AlertStoreService } from './shared/alert-store.service'
 @Component({
   selector: 'app-alert-inc',
   template: `
-    <button (click)="inc()">INC</button>
+    <button (click)="alertStoreService.inc()" class="btn btn-primary">INC</button>
   `
 })
 export class AlertIncComponent {
   
   constructor(private alertStoreService: AlertStoreService) {}
-
-  inc(): void {
-    this.alertStoreService.inc();
-  }
 
 } 
